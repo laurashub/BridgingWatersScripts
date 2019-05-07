@@ -1,0 +1,43 @@
+<ROSETTASCRIPTS>
+     <SCORINGGRIDS ligand_chain="X" width="30.0">
+        <ClassicGrid grid_name="vdw" weight="1.0"/>
+    </SCORINGGRIDS>
+
+    <SCOREFXNS>
+        <ScoreFunction name="hard_rep" weights="ligand">
+            <Reweight scoretype="fa_intra_rep" weight="0.004"/>
+            <Reweight scoretype="fa_elec" weight="0.42"/>
+            <Reweight scoretype="hbond_bb_sc" weight="1.3"/>
+            <Reweight scoretype="hbond_sc" weight="1.3"/>
+            <Reweight scoretype="rama" weight="0.2"/>
+        </ScoreFunction>
+    </SCOREFXNS>
+    <TASKOPERATIONS>
+        <RestrictToRepacking name="repackonly"/>
+    </TASKOPERATIONS>
+    <SIMPLE_METRICS>
+        <TimingProfileMetric name="timing" />
+    </SIMPLE_METRICS>
+    <MOVERS>
+        <StartFrom name="start_from" chain="X">
+            <PDB filename="%%startfrom%%" />
+        </StartFrom>
+        <Transform name="transform" chain="X" box_size="5.0" move_distance="0.1" angle="5.0" cycles="500" repeats="1" temperature="5" initial_perturb="3.0" />
+        <PackRotamersMover name="pack_rotamers_mover" task_operations="repackonly"/>
+        <PlaceWaters name="place_waters" chain="X" resolution="%%res%%" cutoff="%%cutoff%%" group_cutoff="%%group%%" merge_cutoff="%%merge%%" hbonds_inner="%%nhi%%" hbonds_outer="%%nho%%" water="/Users/Rose/PlaceWaters/Rosetta/main/database/chemical/residue_type_sets/fa_standard/residue_types/water/HOH.params"/>
+        <RunSimpleMetrics name="timing_metric_1" metrics="timing" prefix="lowres_" />
+        <RunSimpleMetrics name="timing_metric_2" metrics="timing" prefix="repack_"/>
+        <RunSimpleMetrics name="timing_metric_3" metrics="timing" prefix="pw_"/>
+    </MOVERS>
+
+    <PROTOCOLS>
+        <Add mover_name="start_from"/>
+        <Add mover_name="transform"/>
+        <Add mover_name="timing_metric_1"/>
+        <Add mover_name="pack_rotamers_mover"/>
+        <Add mover_name="timing_metric_2"/>
+        <Add mover_name="place_waters"/>
+        <Add mover_name="timing_metric_3"/>
+    </PROTOCOLS>
+
+</ROSETTASCRIPTS>
